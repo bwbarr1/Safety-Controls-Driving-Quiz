@@ -3,57 +3,150 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safety Control Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
-        img { max-width: 400px; margin: 20px auto; display: block; }
-        .option { margin: 10px; }
-        .feedback { font-weight: bold; margin-top: 20px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e9f5f9;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+        }
+        .option {
+            margin: 10px 0;
+        }
+        .feedback {
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background: #0078D4;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #005a9e;
+        }
+        .hidden {
+            display: none;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 150px;
+        }
     </style>
 </head>
 <body>
-    <h1>Safety Control Quiz</h1>
-    <p>What type of control is shown in the image below?</p>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg" alt="Airbag Deployment">
-
-    <form id="quizForm">
-        <div class="option">
-            <input type="checkbox" id="direct" name="control" value="Direct Control">
-            <label for="direct">Direct Control</label>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Commons-logo.svg" alt="Logo" class="logo">
+        <h1>Safety Control Quiz</h1>
+        <div id="quiz">
+            <h2 id="question">Question will go here</h2>
+            <img id="image" src="" alt="Question Image">
+            <form id="quizForm"></form>
+            <button class="button" onclick="submitAnswer()">Submit</button>
+            <div class="feedback" id="feedback"></div>
         </div>
-        <div class="option">
-            <input type="checkbox" id="engineering" name="control" value="Engineering Control">
-            <label for="engineering">Engineering Control</label>
+        <div id="result" class="hidden">
+            <h2>Quiz Complete!</h2>
+            <p id="score"></p>
         </div>
-        <div class="option">
-            <input type="checkbox" id="missing" name="control" value="[Missing Option]">
-            <label for="missing">[Missing Option]</label>
-        </div>
-        <div class="option">
-            <input type="checkbox" id="btn" name="control" value="Better Than Nothing">
-            <label for="btn">Better Than Nothing</label>
-        </div>
-        <button type="button" onclick="checkAnswer()">Submit</button>
-    </form>
-
-    <div class="feedback" id="feedback"></div>
+    </div>
 
     <script>
-        function checkAnswer() {
-            const correctAnswers = ["Direct Control", "Engineering Control"];
+        const questions = [
+            {
+                question: "What type of control is shown in the image below?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg",
+                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                correct: ["Direct Control", "Engineering Control"]
+            },
+            {
+                question: "What type of control is lane assist in a vehicle?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lane_assist_warning.jpg/640px-Lane_assist_warning.jpg",
+                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                correct: ["Engineering Control"]
+            },
+            {
+                question: "What type of control is using a rear-view mirror?",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Rear_view_mirror.jpg/640px-Rear_view_mirror.jpg",
+                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                correct: ["Better Than Nothing"]
+            }
+        ];
+
+        let current = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const q = questions[current];
+            document.getElementById("question").textContent = q.question;
+            document.getElementById("image").src = q.image;
+            const form = document.getElementById("quizForm");
+            form.innerHTML = "";
+            q.options.forEach(opt => {
+                const div = document.createElement("div");
+                div.className = "option";
+                div.innerHTML = `<input type='checkbox' name='control' value='${opt}'> ${opt}`;
+                form.appendChild(div);
+            });
+            document.getElementById("feedback").textContent = "";
+        }
+
+        function submitAnswer() {
             const selected = Array.from(document.querySelectorAll('input[name="control"]:checked')).map(el => el.value);
+            const correct = questions[current].correct;
+            const isCorrect = correct.every(ans => selected.includes(ans)) && selected.length === correct.length;
             const feedback = document.getElementById("feedback");
 
-            const correct = correctAnswers.every(ans => selected.includes(ans)) && selected.length === correctAnswers.length;
-
-            if (correct) {
-                feedback.textContent = "✅ Correct! Airbags are both Direct and Engineering Controls.";
+            if (isCorrect) {
+                feedback.textContent = "✅ Correct!";
                 feedback.style.color = "green";
+                score++;
             } else {
-                feedback.textContent = "❌ Not quite. Airbags are both Direct and Engineering Controls.";
+                feedback.textContent = `❌ Not quite. Correct answers: ${correct.join(", ")}`;
                 feedback.style.color = "red";
             }
+
+            setTimeout(() => {
+                current++;
+                if (current < questions.length) {
+                    loadQuestion();
+                } else {
+                    document.getElementById("quiz").classList.add("hidden");
+                    document.getElementById("result").classList.remove("hidden");
+                    document.getElementById("score").textContent = `You scored ${score} out of ${questions.length}`;
+                }
+            }, 2000);
         }
+
+        loadQuestion();
     </script>
 </body>
 </html>
