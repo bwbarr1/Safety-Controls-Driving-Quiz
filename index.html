@@ -11,15 +11,16 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background: #f0f4f8;
-            color: #333;
+            background: linear-gradient(to bottom right, #FFCD11, #ffffff);
+            color: #000;
         }
         .container {
             max-width: 600px;
             margin: auto;
             padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 10px;
         }
         h1, h2, h3 {
             text-align: center;
@@ -40,10 +41,10 @@
         }
         .button {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 24px;
             margin: 10px 5px;
-            background: #0078D4;
-            color: white;
+            background: #FFCD11;
+            color: #000;
             border: none;
             font-size: 16px;
             border-radius: 8px;
@@ -51,7 +52,7 @@
             cursor: pointer;
         }
         .button:hover {
-            background: #005a9e;
+            background: #e6b800;
         }
         .hidden {
             display: none;
@@ -69,14 +70,14 @@
         }
         .progress {
             height: 10px;
-            background: #ddd;
+            background: #ccc;
             border-radius: 5px;
             overflow: hidden;
             margin: 20px 0;
         }
         .progress-bar {
             height: 100%;
-            background: #0078D4;
+            background: #000;
             width: 0%;
             transition: width 0.3s;
         }
@@ -113,9 +114,7 @@
             <img id="image" src="" alt="Question Image">
             <form id="quizForm"></form>
             <div style="text-align:center;">
-                <button class="button" onclick="prevQuestion()">Back</button>
                 <button class="button" onclick="submitAnswer()">Submit</button>
-                <button class="button" onclick="nextQuestion()">Next</button>
             </div>
             <div class="feedback" id="feedback"></div>
         </div>
@@ -143,6 +142,19 @@
             document.getElementById("intro").classList.add("hidden");
             document.getElementById("quiz").classList.remove("hidden");
             loadQuestion();
+        }
+
+        function getGradingComment(score, total) {
+            const percent = (score / total) * 100;
+            let comments = [];
+            if (percent === 100) {
+                comments = ["Wow, you did it!", "I'm so proud of you!", "A perfect score?! You're amazing!"];
+            } else if (percent >= 80) {
+                comments = ["Almost! Try again!!", "You're getting there!!", "I know you can get a perfect score... keep trying!"];
+            } else {
+                comments = ["Aw man! I know you can do better than that!", "Oh no! Let's try again...", "I think it might be time to review our definitions...let's try again!"];
+            }
+            return comments[Math.floor(Math.random() * comments.length)];
         }
 
         const questions = [
@@ -188,20 +200,18 @@
                 feedback.textContent = `❌ Not quite. Correct answers: ${correct.join(", ")}`;
                 feedback.style.color = "red";
             }
-        }
 
-        function nextQuestion() {
-            if (current < questions.length - 1) {
+            setTimeout(() => {
                 current++;
-                loadQuestion();
-            }
-        }
-
-        function prevQuestion() {
-            if (current > 0) {
-                current--;
-                loadQuestion();
-            }
+                if (current < questions.length) {
+                    loadQuestion();
+                } else {
+                    document.getElementById("quiz").classList.add("hidden");
+                    document.getElementById("result").classList.remove("hidden");
+                    const comment = getGradingComment(score, questions.length);
+                    document.getElementById("score").innerHTML = `You scored ${score} out of ${questions.length}<br><strong>${comment}</strong>`;
+                }
+            }, 2000);
         }
 
         function updateProgressBar() {
