@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Safety Control Quiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 40px; }
+        img { max-width: 400px; margin: 20px auto; display: block; }
+        .option { margin: 10px; }
+        .feedback { font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Safety Control Quiz</h1>
+    <p>What type of control is shown in the image below?</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg" alt="Airbag Deployment">
+
+    <form id="quizForm">
+        <div class="option">
+            <input type="checkbox" id="direct" name="control" value="Direct Control">
+            <label for="direct">Direct Control</label>
+        </div>
+        <div class="option">
+            <input type="checkbox" id="engineering" name="control" value="Engineering Control">
+            <label for="engineering">Engineering Control</label>
+        </div>
+        <div class="option">
+            <input type="checkbox" id="missing" name="control" value="[Missing Option]">
+            <label for="missing">[Missing Option]</label>
+        </div>
+        <div class="option">
+            <input type="checkbox" id="btn" name="control" value="Better Than Nothing">
+            <label for="btn">Better Than Nothing</label>
+        </div>
+        <button type="button" onclick="checkAnswer()">Submit</button>
+    </form>
+
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        function checkAnswer() {
+            const correctAnswers = ["Direct Control", "Engineering Control"];
+            const selected = Array.from(document.querySelectorAll('input[name="control"]:checked')).map(el => el.value);
+            const feedback = document.getElementById("feedback");
+
+            const correct = correctAnswers.every(ans => selected.includes(ans)) && selected.length === correctAnswers.length;
+
+            if (correct) {
+                feedback.textContent = "✅ Correct! Airbags are both Direct and Engineering Controls.";
+                feedback.style.color = "green";
+            } else {
+                feedback.textContent = "❌ Not quite. Airbags are both Direct and Engineering Controls.";
+                feedback.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
