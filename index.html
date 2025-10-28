@@ -39,14 +39,15 @@
             text-align: center;
         }
         .button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
             background: #0078D4;
             color: white;
             border: none;
             font-size: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             cursor: pointer;
         }
         .button:hover {
@@ -65,6 +66,19 @@
         }
         .intro-page.active {
             display: block;
+        }
+        .progress {
+            height: 10px;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #0078D4;
+            width: 0%;
+            transition: width 0.3s;
         }
     </style>
 </head>
@@ -94,16 +108,22 @@
         </div>
 
         <div id="quiz" class="hidden">
+            <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
             <h2 id="question">Question will go here</h2>
             <img id="image" src="" alt="Question Image">
             <form id="quizForm"></form>
-            <button class="button" onclick="submitAnswer()">Submit</button>
+            <div style="text-align:center;">
+                <button class="button" onclick="prevQuestion()">Back</button>
+                <button class="button" onclick="submitAnswer()">Submit</button>
+                <button class="button" onclick="nextQuestion()">Next</button>
+            </div>
             <div class="feedback" id="feedback"></div>
         </div>
 
         <div id="result" class="hidden">
             <h2>Quiz Complete!</h2>
             <p id="score"></p>
+            <button class="button" onclick="restartQuiz()">Try Again</button>
         </div>
     </div>
 
@@ -126,24 +146,13 @@
         }
 
         const questions = [
-            {
-                question: "What type of control is shown in the image below?",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg?raw=true",
-                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
-                correct: ["Direct Control", "Engineering Control"]
-            },
-            {
-                question: "What type of control is lane assist in a vehicle?",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lane_assist_warning.jpg/640px-Lane_assist_warning.jpg?raw=true",
-                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
-                correct: ["Engineering Control"]
-            },
-            {
-                question: "What type of control is using a rear-view mirror?",
-                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Rear_view_mirror.jpg/640px-Rear_view_mirror.jpg?raw=true",
-                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
-                correct: ["Better Than Nothing"]
-            }
+            { question: "What type of control is shown in the image below?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Direct Control", "Engineering Control"] },
+            { question: "What type of control is lane assist in a vehicle?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lane_assist_warning.jpg/640px-Lane_assist_warning.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Engineering Control"] },
+            { question: "What type of control is using a rear-view mirror?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Rear_view_mirror.jpg/640px-Rear_view_mirror.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Better Than Nothing"] },
+            { question: "What type of control is using side-view mirrors?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Side_mirror.jpg/640px-Side_mirror.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Better Than Nothing"] },
+            { question: "What type of control is using turn indicators?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Turn_signal.jpg/640px-Turn_signal.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Direct Control"] },
+            { question: "What type of control is brake assist?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Brake_assist.jpg/640px-Brake_assist.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Engineering Control"] },
+            { question: "What type of control is lane change assist?", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Lane_change_assist.jpg/640px-Lane_change_assist.jpg", options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"], correct: ["Engineering Control"] }
         ];
 
         let current = 0;
@@ -162,6 +171,7 @@
                 form.appendChild(div);
             });
             document.getElementById("feedback").textContent = "";
+            updateProgressBar();
         }
 
         function submitAnswer() {
@@ -178,17 +188,33 @@
                 feedback.textContent = `❌ Not quite. Correct answers: ${correct.join(", ")}`;
                 feedback.style.color = "red";
             }
+        }
 
-            setTimeout(() => {
+        function nextQuestion() {
+            if (current < questions.length - 1) {
                 current++;
-                if (current < questions.length) {
-                    loadQuestion();
-                } else {
-                    document.getElementById("quiz").classList.add("hidden");
-                    document.getElementById("result").classList.remove("hidden");
-                    document.getElementById("score").textContent = `You scored ${score} out of ${questions.length}`;
-                }
-            }, 2000);
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (current > 0) {
+                current--;
+                loadQuestion();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((current + 1) / questions.length) * 100;
+            document.getElementById("progressBar").style.width = progress + "%";
+        }
+
+        function restartQuiz() {
+            current = 0;
+            score = 0;
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            loadQuestion();
         }
     </script>
 </body>
