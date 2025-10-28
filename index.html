@@ -11,7 +11,7 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background: #e9f5f9;
+            background: #f0f4f8;
             color: #333;
         }
         .container {
@@ -21,7 +21,7 @@
             background: white;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
         }
         img {
@@ -60,19 +60,47 @@
             margin: 0 auto 20px;
             max-width: 150px;
         }
+        .intro-page {
+            display: none;
+        }
+        .intro-page.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="https://github.com/bwbarr1/Safety-Controls-Driving-Quiz/blob/main/Progress%20Rail_Logo%20(1).png?raw=true" alt="Logo" class="logo">
-        <h1>Safety Control Quiz</h1>
-        <div id="quiz">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Commons-logo.svg" alt="Logo" class="logo">
+        <div id="intro">
+            <div class="intro-page active">
+                <h1>Welcome to the Safety Control Quiz</h1>
+                <p>This game will help you learn to identify different types of safety controls used in vehicles and workplaces.</p>
+                <button class="button" onclick="nextIntroPage()">Next</button>
+            </div>
+            <div class="intro-page">
+                <h2>Types of Controls</h2>
+                <p><strong>Direct Control:</strong> Actions you take yourself (e.g., putting on a seatbelt).</p>
+                <p><strong>Engineering Control:</strong> Built-in safety features (e.g., airbags, lane assist).</p>
+                <p><strong>Administrative Control:</strong> Policies or training (e.g., safety signage).</p>
+                <p><strong>Better Than Nothing:</strong> Not ideal, but still helpful (e.g., rear-view mirror).</p>
+                <button class="button" onclick="nextIntroPage()">Next</button>
+            </div>
+            <div class="intro-page">
+                <h2>How to Play</h2>
+                <p>You'll see a scenario and choose all applicable control types. Some questions have more than one correct answer.</p>
+                <p>Try to get the highest score!</p>
+                <button class="button" onclick="startQuiz()">Start Quiz</button>
+            </div>
+        </div>
+
+        <div id="quiz" class="hidden">
             <h2 id="question">Question will go here</h2>
             <img id="image" src="" alt="Question Image">
             <form id="quizForm"></form>
             <button class="button" onclick="submitAnswer()">Submit</button>
             <div class="feedback" id="feedback"></div>
         </div>
+
         <div id="result" class="hidden">
             <h2>Quiz Complete!</h2>
             <p id="score"></p>
@@ -80,23 +108,40 @@
     </div>
 
     <script>
+        const introPages = document.querySelectorAll('.intro-page');
+        let introIndex = 0;
+
+        function nextIntroPage() {
+            introPages[introIndex].classList.remove('active');
+            introIndex++;
+            if (introIndex < introPages.length) {
+                introPages[introIndex].classList.add('active');
+            }
+        }
+
+        function startQuiz() {
+            document.getElementById("intro").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            loadQuestion();
+        }
+
         const questions = [
             {
                 question: "What type of control is shown in the image below?",
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Airbag_deployment_test.jpg/640px-Airbag_deployment_test.jpg",
-                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
                 correct: ["Direct Control", "Engineering Control"]
             },
             {
                 question: "What type of control is lane assist in a vehicle?",
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lane_assist_warning.jpg/640px-Lane_assist_warning.jpg",
-                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
                 correct: ["Engineering Control"]
             },
             {
                 question: "What type of control is using a rear-view mirror?",
                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Rear_view_mirror.jpg/640px-Rear_view_mirror.jpg",
-                options: ["Direct Control", "Engineering Control", "[Missing Option]", "Better Than Nothing"],
+                options: ["Direct Control", "Engineering Control", "Administrative Control", "Better Than Nothing"],
                 correct: ["Better Than Nothing"]
             }
         ];
@@ -145,8 +190,6 @@
                 }
             }, 2000);
         }
-
-        loadQuestion();
     </script>
 </body>
 </html>
